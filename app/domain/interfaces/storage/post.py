@@ -2,6 +2,7 @@ import abc
 import uuid
 
 from app.domain.models.post import Post
+from app.domain.models.post_tag import PostTag
 
 
 class PostRepository(abc.ABC):
@@ -23,4 +24,12 @@ class PostRepository(abc.ABC):
 
     @abc.abstractmethod
     def delete_post_by_id(self, id_: uuid.UUID) -> None:
+        pass
+
+    @abc.abstractmethod
+    def add_tag(self, id_: uuid.UUID, tag: PostTag) -> None:
+        pass
+
+    @abc.abstractmethod
+    def remove_tag(self, id_: uuid.UUID, tag: PostTag) -> None:
         pass
