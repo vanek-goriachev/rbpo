@@ -1,6 +1,6 @@
 import uuid
 
 
-class Tag:
+class PostTag:
     id_: uuid.UUID
     name: str

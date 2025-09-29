@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime as Datetime
 
-from app.domain.models.tag import Tag
+from app.domain.models.post_tag import PostTag
 
 POST_STATUS_DRAFT = "draft"
 POST_STATUS_ON_MODERATION = "on_moderation"
@@ -16,4 +16,4 @@ class Post:
     status: str
     created_at: Datetime
     updated_at: Datetime
-    tags: list[Tag]
+    tags: list[PostTag]
