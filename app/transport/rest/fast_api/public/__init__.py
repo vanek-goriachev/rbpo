@@ -26,6 +26,8 @@ class PublicAPI:
         self.post_tag_api = PostTagApi(self.fastapi_app, api_prefix="/post_tag")
 
     def register(self):
+        self.exception_handlers.register()
+
         self.healthcheck.register()
         self.post_api.register()
         self.post_tag_api.register()
