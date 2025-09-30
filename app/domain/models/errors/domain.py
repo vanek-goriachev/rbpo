@@ -4,6 +4,9 @@ class DomainError(Exception):
     def __init__(self, message: str = "unspecified domain error"):
         self.message = message
 
+    def __str__(self):
+        return self.message
+
 
 class NotFoundError(DomainError):
     NOT_FOUND_ERROR_TEMPLATE: str = "{instance_type} not found"
@@ -15,4 +18,4 @@ class NotFoundError(DomainError):
         if instance_type is None:
             self.message = self.UNSPECIFIED_MESSAGE
         else:
-            self.message = format(self.NOT_FOUND_ERROR_TEMPLATE, type(instance_type))
+            self.message = self.NOT_FOUND_ERROR_TEMPLATE.format(instance_type=instance_type)

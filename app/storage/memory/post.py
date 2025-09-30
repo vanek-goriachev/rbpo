@@ -10,11 +10,16 @@ class MemoryPostStorage(PostRepositoryInterface):
 
     posts: dict[uuid.UUID, Post]
 
+    def __init__(self):
+        self.posts = {}
+
     def create_post(self, post: Post) -> None:
         self.posts[post.id_] = post
+        print(self.posts)
 
     def get_post_by_id(self, id_: uuid.UUID) -> Post:
         if id_ not in self.posts:
+            print(self.posts)
             raise NotFoundError(instance_type=Post)
 
         return self.posts[id_]

@@ -17,9 +17,5 @@ post_tags_service = PostTagService(post_tags_repository)
 # transport
 fastapi_app = FastAPI(title="SimpleBlog public API", version="0.1.0")
 
-public_api = PublicAPI(fastapi_app)
-public_api.set_domain_services(
-    post_service,
-    post_tags_service,
-)
+public_api = PublicAPI(fastapi_app, post_service, post_tags_service)
 public_api.register()

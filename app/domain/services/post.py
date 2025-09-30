@@ -24,6 +24,8 @@ class PostService:
             updated_at=DateTime.now(),
         )
 
+        self.post_repository.create_post(post)
+
         return post.id_
 
     def list_posts(self) -> list[Post]:
@@ -33,7 +35,7 @@ class PostService:
         post = self.post_repository.get_post_by_id(id_)
 
         for key, value in kwargs.items():
-            if key in ["id_", "created_at", "updated_at"]:
+            if key not in ["id_", "created_at", "updated_at"]:
                 setattr(post, key, value)
 
         post.updated_at = DateTime.now()
