@@ -27,9 +27,9 @@ class PostRepository(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def add_tag(self, id_: uuid.UUID, tag: PostTag) -> None:
+    def add_tags(self, id_: uuid.UUID, tags: list[PostTag]) -> None:
         pass
 
     @abc.abstractmethod
-    def remove_tag(self, id_: uuid.UUID, tag: PostTag) -> None:
+    def remove_tags(self, id_: uuid.UUID, tags: list[PostTag]) -> None:
         pass

@@ -28,8 +28,11 @@ class MemoryPostStorage(PostRepositoryInterface):
     def delete_post_by_id(self, id_: uuid.UUID) -> None:
         del self.posts[id_]
 
-    def add_tag(self, id_: uuid.UUID, tag: PostTag) -> None:
-        self.posts[id_].tags.append(tag)
+    def add_tags(self, id_: uuid.UUID, tags: list[PostTag]) -> None:
+        existing_tags = set(self.posts[id_].tags)
+        new_tags = set(tags)
 
-    def remove_tag(self, id_: uuid.UUID, tag: PostTag) -> None:
-        self.posts[id_].tags.remove(tag)
+        self.posts[id_].tags = list(new_tags.intersection(existing_tags))
+
+    def remove_tags(self, id_: uuid.UUID, tags: list[PostTag]) -> None:
+        self.posts[id_].tags.remove(*tags)
