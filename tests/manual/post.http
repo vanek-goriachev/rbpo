@@ -1,0 +1,29 @@
+### List all
+
+GET localhost:8000/post
+Content-Type: application/json
+
+### Create
+
+POST localhost:8000/post
+Content-Type: application/json
+
+{
+    "title": "My Post3",
+    "body": "This is my post3"
+}
+
+### Get by id
+
+GET localhost:8000/post/105358d1-106e-4a18-afa3-db745afdffda
+Content-Type: application/json
+
+### Publish by id
+
+PUT localhost:8000/post/105358d1-106e-4a18-afa3-db745afdffda/publish
+Content-Type: application/json
+
+### Archive by id
+
+PUT localhost:8000/post/105358d1-106e-4a18-afa3-db745afdffda/archive
+Content-Type: application/json

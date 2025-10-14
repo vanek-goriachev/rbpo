@@ -1,0 +1,15 @@
+20
+
+Simple Blog
+
+Мини-блог без публичных аккаунтов
+
+User; Post(title, body, status); Tag
+
+CRUD /posts; GET /posts?status=&tag=
+
+AuthN/AuthZ; owner-only; content length
+
+Публичная лента (read-only)
+
+Python/FastAPI + SQLite/Postgres + Pytest
