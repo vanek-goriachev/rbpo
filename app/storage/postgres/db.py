@@ -2,9 +2,7 @@ from contextlib import contextmanager
 from typing import Optional
 
 from sqlalchemy import Engine, create_engine
-from sqlalchemy.engine import IsolationLevel
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.orm import Session, declarative_base, sessionmaker
 
 Base = declarative_base()
 
@@ -76,16 +74,13 @@ class DatabaseManager:
         Base.metadata.drop_all(bind=self._engine)
 
     @contextmanager
-    def transaction(self, isolation_level: IsolationLevel = None):
+    def transaction(self):
         """Контекстный менеджер для транзакций с возможностью задания уровня изоляции"""
         if not self._initialized:
             raise RuntimeError("DatabaseManager не инициализирован. Вызовите initialize() сначала.")
 
         session = self._session_factory()
         try:
-            if isolation_level:
-                session.connection().connection.set_isolation_level(isolation_level)
-
             yield session
             session.commit()
         except Exception:

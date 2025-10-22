@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Column, DateTime, ForeignKey, String, Table, Text
+from sqlalchemy import Column, DateTime, String, Table, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
@@ -11,8 +11,8 @@ from app.storage.postgres.db import Base
 post_tag_association = Table(
     "post_tags",
     Base.metadata,
-    Column("post_id", UUID(as_uuid=True), ForeignKey("posts.id"), primary_key=True),
-    Column("post_tag_id", UUID(as_uuid=True), ForeignKey("post_tags.id"), primary_key=True),
+    Column("post_id", UUID(as_uuid=True), primary_key=True),
+    Column("post_tag_id", UUID(as_uuid=True), primary_key=True),
 )
 
 
@@ -20,6 +20,7 @@ class UserModel(Base):
     """SQLAlchemy модель для пользователей"""
 
     __tablename__ = "users"
+    __table_args__ = {"extend_existing": True}
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     username = Column(String(255), nullable=False, unique=True)
@@ -31,6 +32,7 @@ class PostModel(Base):
     """SQLAlchemy модель для постов"""
 
     __tablename__ = "posts"
+    __table_args__ = {"extend_existing": True}
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     title = Column(String(500), nullable=False)
@@ -47,6 +49,7 @@ class PostTagModel(Base):
     """SQLAlchemy модель для тегов постов"""
 
     __tablename__ = "post_tags"
+    __table_args__ = {"extend_existing": True}
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String(100), nullable=False, unique=True)

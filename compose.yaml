@@ -12,7 +12,8 @@ services:
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     profiles: ["dev"]
 
   postgres:
@@ -29,9 +30,10 @@ services:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
-      interval: 10s
+      interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
+      start_period: 10s
     profiles: ["dev"]
 
 volumes:
