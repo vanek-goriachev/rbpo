@@ -12,6 +12,30 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: test_db
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    env:
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_NAME: test_db
+      DB_USER: test_user
+      DB_PASSWORD: test_password
+      DATABASE_URL: postgresql://test_user:test_password@localhost:5432/test_db
+
     steps:
       - uses: actions/checkout@v4
 
@@ -31,8 +55,21 @@ jobs:
           black --check .
           isort --check-only .
 
+      - name: Wait for PostgreSQL
+        run: |
+          until pg_isready -h localhost -p 5432; do
+            sleep 1
+          done
+        # Установка postgresql-client для pg_isready
+        env:
+          PGHOST: localhost
+          PGPORT: 5432
+          PGUSER: test_user
+          PGPASSWORD: test_password
+
       - name: Tests
-        run: pytest -q
+        run: |
+          pytest -v
 
       - name: Pre-commit (all files)
         run: pre-commit run --all-files
