@@ -56,11 +56,6 @@ class PostRepository(PostRepositoryInterface):
         if not post_model:
             raise NotFoundError(instance_type=Post)
 
-        # Преобразуем теги из модели в доменные объекты
-        tags = []
-        if post_model.tags:
-            tags = [PostTag(id_=tag.id, name=tag.name) for tag in post_model.tags]
-
         return Post(
             id_=post_model.id,
             title=post_model.title,
@@ -68,7 +63,7 @@ class PostRepository(PostRepositoryInterface):
             status=post_model.status,
             created_at=post_model.created_at,
             updated_at=post_model.updated_at,
-            tags=tags,
+            tags=[],
         )
 
     def update_post(self, post: Post, session: Optional[Session] = None) -> None:
