@@ -15,6 +15,7 @@ def test_create_post_greenpath():
         },
     )
     assert response.status_code == 200
+    assert response.json() == ""
     assert response.json()["title"] == "My awesome post"
     assert response.json()["body"] == "This is the content of my awesome post."
 
