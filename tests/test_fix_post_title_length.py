@@ -27,21 +27,23 @@ def test_create_post_title_too_long():
         "/post", json={"title": long_title, "body": "Some body text", "user_id": 1}
     )
     assert response.status_code == 400
-    assert "Title must be at most 255 characters" in response.json()["error"]
+    assert "Title is too long" in response.json()["error"]
 
 
 def test_create_post_body_too_long():
     long_body = "a" * 4096
     response = client.post("/post", json={"title": "Short title", "body": long_body, "user_id": 1})
     assert response.status_code == 400
-    assert "Body must be at most 4095 characters" in response.json()["error"]
+    assert "Body is too long" in response.json()["error"]
 
 
 def test_create_post_sql_injection_attempt():
     title = "'; DROP TABLE posts;--"
     response = client.post("/post", json={"title": title, "body": "Some body text", "user_id": 1})
-    assert response.status_code == 400
-    assert "Title must be at most 255 characters" in response.json()["error"]
+    assert response.status_code == 200
+
+    response = client.get(f"/post/{response.json()['id']}")
+    assert response.json()["title"] == title
 
 
 def test_create_post_title_boundary_255():
