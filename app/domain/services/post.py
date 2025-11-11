@@ -1,3 +1,4 @@
+import logging
 import uuid
 from datetime import datetime as DateTime
 
@@ -5,6 +6,8 @@ from app.domain.interfaces.storage.post import PostRepository
 from app.domain.interfaces.storage.post_tag import PostTagRepository
 from app.domain.models.errors.domain import ValidationError
 from app.domain.models.post import Post
+
+logger = logging.getLogger(__name__)
 
 
 class PostService:
@@ -32,6 +35,7 @@ class PostService:
         )
 
         self.post_repository.create_post(post)
+        logger.info(f"Created new post with ID: {post.id_}")
 
         return post.id_
 
