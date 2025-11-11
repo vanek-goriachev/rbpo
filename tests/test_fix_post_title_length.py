@@ -5,7 +5,7 @@ from app.cmd.public_api import fastapi_app
 client = TestClient(fastapi_app)
 
 
-def test_create_post_greenpath(client):
+def test_create_post_greenpath():
     response = client.post(
         "/post/create",
         json={
@@ -19,7 +19,7 @@ def test_create_post_greenpath(client):
     assert response.json()["body"] == "This is the content of my awesome post."
 
 
-def test_create_post_title_too_long(client):
+def test_create_post_title_too_long():
     long_title = "a" * 256
     response = client.post(
         "/post/create", json={"title": long_title, "body": "Some body text", "user_id": 1}
@@ -28,7 +28,7 @@ def test_create_post_title_too_long(client):
     assert "Title must be at most 255 characters" in response.json()["detail"]
 
 
-def test_create_post_body_too_long(client):
+def test_create_post_body_too_long():
     long_body = "a" * 4096
     response = client.post(
         "/post/create", json={"title": "Short title", "body": long_body, "user_id": 1}
@@ -37,7 +37,7 @@ def test_create_post_body_too_long(client):
     assert "Body must be at most 4095 characters" in response.json()["detail"]
 
 
-def test_create_post_sql_injection_attempt(client):
+def test_create_post_sql_injection_attempt():
     title = "'; DROP TABLE posts;--"
     response = client.post(
         "/post/create", json={"title": title, "body": "Some body text", "user_id": 1}
@@ -46,7 +46,7 @@ def test_create_post_sql_injection_attempt(client):
     assert "Title must be at most 255 characters" in response.json()["detail"]
 
 
-def test_create_post_title_boundary_255(client):
+def test_create_post_title_boundary_255():
     title = "a" * 255
     response = client.post(
         "/post/create", json={"title": title, "body": "Some body text", "user_id": 1}
@@ -55,7 +55,7 @@ def test_create_post_title_boundary_255(client):
     assert response.json()["title"] == title
 
 
-def test_create_post_body_boundary_4095(client):
+def test_create_post_body_boundary_4095():
     body = "a" * 4095
     response = client.post(
         "/post/create", json={"title": "Short title", "body": body, "user_id": 1}
