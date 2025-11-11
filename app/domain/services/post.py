@@ -3,6 +3,7 @@ from datetime import datetime as DateTime
 
 from app.domain.interfaces.storage.post import PostRepository
 from app.domain.interfaces.storage.post_tag import PostTagRepository
+from app.domain.models.errors.domain import ValidationError
 from app.domain.models.post import Post
 
 
@@ -15,6 +16,12 @@ class PostService:
         return self.post_repository.get_post_by_id(id_)
 
     def create_post(self, title: str, body: str, status: str) -> uuid.UUID:
+        if len(title) > 255:
+            raise ValidationError("Title is too long")
+
+        if len(body) > 4095:
+            raise ValidationError("Body is too long")
+
         post = Post(
             id_=uuid.uuid4(),
             title=title,

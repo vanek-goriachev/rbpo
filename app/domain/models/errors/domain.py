@@ -8,6 +8,16 @@ class DomainError(Exception):
         return self.message
 
 
+class ValidationError(DomainError):
+    message: str
+
+    def __init__(self, message: str = "Validation error"):
+        self.message = message
+
+    def __str__(self):
+        return self.message
+
+
 class NotFoundError(DomainError):
     NOT_FOUND_ERROR_TEMPLATE: str = "{instance_type} not found"
     UNSPECIFIED_MESSAGE: str = "unspecified not_found error"
