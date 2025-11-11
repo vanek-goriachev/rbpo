@@ -27,11 +27,6 @@ class PostRepository(PostRepositoryInterface):
 
     def _create_post_with_session(self, session: Session, post: Post) -> None:
         """Внутренний метод для создания поста"""
-        # Получаем теги из базы данных
-        tag_models = []
-        if post.tags:
-            tag_ids = [tag.id_ for tag in post.tags]
-            tag_models = session.query(PostTagModel).filter(PostTagModel.id.in_(tag_ids)).all()
 
         post_model = PostModel(
             id=post.id_,
@@ -40,7 +35,6 @@ class PostRepository(PostRepositoryInterface):
             status=post.status,
             created_at=post.created_at,
             updated_at=post.updated_at,
-            tags=tag_models,
         )
 
         session.add(post_model)
