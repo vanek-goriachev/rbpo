@@ -27,11 +27,6 @@ class PostRepository(PostRepositoryInterface):
 
     def _create_post_with_session(self, session: Session, post: Post) -> None:
         """Внутренний метод для создания поста"""
-        # Получаем теги из базы данных
-        tag_models = []
-        if post.tags:
-            tag_ids = [tag.id_ for tag in post.tags]
-            tag_models = session.query(PostTagModel).filter(PostTagModel.id.in_(tag_ids)).all()
 
         post_model = PostModel(
             id=post.id_,
@@ -40,7 +35,6 @@ class PostRepository(PostRepositoryInterface):
             status=post.status,
             created_at=post.created_at,
             updated_at=post.updated_at,
-            tags=tag_models,
         )
 
         session.add(post_model)
@@ -62,11 +56,6 @@ class PostRepository(PostRepositoryInterface):
         if not post_model:
             raise NotFoundError(instance_type=Post)
 
-        # Преобразуем теги из модели в доменные объекты
-        tags = []
-        if post_model.tags:
-            tags = [PostTag(id_=tag.id, name=tag.name) for tag in post_model.tags]
-
         return Post(
             id_=post_model.id,
             title=post_model.title,
@@ -74,7 +63,7 @@ class PostRepository(PostRepositoryInterface):
             status=post_model.status,
             created_at=post_model.created_at,
             updated_at=post_model.updated_at,
-            tags=tags,
+            tags=[],
         )
 
     def update_post(self, post: Post, session: Optional[Session] = None) -> None:

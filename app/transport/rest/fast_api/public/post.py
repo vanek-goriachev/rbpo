@@ -27,11 +27,13 @@ class PostApi:
         async def f(request: Request):
             body = await request.json()
 
-            return self.post_service.create_post(
-                title=body.get("title"),
-                body=body.get("body"),
-                status=POST_STATUS_DRAFT,
-            )
+            return {
+                "id": self.post_service.create_post(
+                    title=body.get("title"),
+                    body=body.get("body"),
+                    status=POST_STATUS_DRAFT,
+                )
+            }
 
         return f
 
