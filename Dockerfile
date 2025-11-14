@@ -6,11 +6,12 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy and install dependencies
 COPY requirements.txt requirements-dev.txt ./
-RUN pip install --no-cache-dir --user -r requirements.txt -r requirements-dev.txt
+RUN pip install --no-cache-dir -r requirements.txt -r requirements-dev.txt
 
 # Runtime stage
 FROM python:3.11-slim
@@ -26,7 +27,8 @@ RUN apt-get update && apt-get install -y \
 RUN groupadd -r appuser && useradd -r -g appuser appuser
 
 # Copy installed packages from builder
-COPY --from=builder /root/.local /root/.local
+COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
 
 # Copy application code
 COPY --chown=appuser:appuser . .
@@ -35,10 +37,6 @@ COPY --chown=appuser:appuser . .
 RUN chmod -R 755 /app && \
     find /app -type f -exec chmod 644 {} \; && \
     chown -R appuser:appuser /app
-
-# Make sure scripts in .local are usable
-ENV PATH=/root/.local/bin:$PATH
-ENV PYTHONPATH=/root/.local/lib/python3.11/site-packages
 
 # Security settings
 ENV PYTHONUNBUFFERED=1
