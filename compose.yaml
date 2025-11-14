@@ -1,6 +1,11 @@
+version: '3.8'
+
 services:
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: myapp
     ports:
       - "8000:8000"
     environment:
@@ -11,13 +16,28 @@ services:
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
+      - REDIS_URL=redis://redis:6379/0
     depends_on:
       postgres:
         condition: service_healthy
+    security_opt:
+      - no-new-privileges:true
+      - seccomp:unconfined
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+      - SETGID
+      - SETUID
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid
+    restart: unless-stopped
     profiles: ["dev"]
 
   postgres:
     image: postgres:15-alpine
+    container_name: postgres_db
     ports:
       - "${DB_PORT:-5432}:5432"
     environment:
@@ -34,7 +54,18 @@ services:
       timeout: 5s
       retries: 10
       start_period: 10s
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid
+    restart: unless-stopped
     profiles: ["dev"]
 
 volumes:
   postgres_data:
+    driver: local
+
+networks:
+  default:
+    name: app_network
+    driver: bridge
