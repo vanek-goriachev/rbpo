@@ -91,5 +91,17 @@ jobs:
     if: github.ref == 'refs/heads/main'
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: build-artifacts-*
+          path: dist/
+
       - name: Emulate deployment
-        run: echo "Deployment simulation completed"
+        run: |
+          echo "Deploying to staging environment"
+          ls -la dist/
+          echo "Deployment simulation completed"
