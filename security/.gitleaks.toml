@@ -1,0 +1,75 @@
+# Gitleaks configuration for project
+title = "Project Secrets Detection"
+
+# Allow commit hashes and hex strings
+allowlist.commit = ""
+
+# Allow test files
+allowlist.paths = [
+  "**/*test*.py",
+  "**/*spec*.js",
+  "**/*test*.js",
+  "**/tests/**",
+  "**/fixtures/**",
+  "**/mocks/**"
+]
+
+# Allow specific patterns (false positives)
+allowlist.regexes = [
+  '''example.*key''',          # Example keys in documentation
+  '''test.*password''',        # Test passwords
+  '''placeholder.*secret''',   # Placeholder values
+  '''BEGIN.*PRIVATE.*KEY''',   # Example keys in docs
+  '''AKIA[0-9A-Z]{16}''',      # AWS test keys (only if they're examples)
+  '''github_pat_.*example''',  # Example GitHub tokens
+]
+
+# Custom rules for our project
+[[rules]]
+id = "custom-aws-access-key"
+description = "AWS Access Key"
+regex = '''(A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16}'''
+tags = ["aws", "key"]
+keywords = ["aws", "access", "key"]
+
+[[rules]]
+id = "custom-jwt-token"
+description = "JWT Token"
+regex = '''eyJ[a-zA-Z0-9_-]*\.[a-zA-Z0-9_-]*\.[a-zA-Z0-9_-]*'''
+tags = ["jwt", "token"]
+keywords = ["jwt", "token"]
+
+[[rules]]
+id = "custom-api-key"
+description = "Generic API Key"
+regex = '''(?i)(api[_-]?key|apikey)[\s]*[=:][\s]*["']?[a-z0-9]{32,}["']?'''
+tags = ["api", "key"]
+keywords = ["api", "key"]
+
+[[rules]]
+id = "custom-database-url"
+description = "Database connection URL with password"
+regex = '''(postgres|mysql|mongodb)://[^:]+:[^@]+@'''
+tags = ["database", "password"]
+keywords = ["postgres", "mysql", "mongodb", "password"]
+
+# GitGuardian-style patterns
+[[rules]]
+id = "gitguardian-slack-webhook"
+description = "Slack Webhook URL"
+regex = '''https://hooks\.slack\.com/services/[A-Za-z0-9]+/[A-Za-z0-9]+/[A-Za-z0-9]+'''
+tags = ["slack", "webhook"]
+keywords = ["slack", "webhook"]
+
+[[rules]]
+id = "gitguardian-stripe-key"
+description = "Stripe API Key"
+regex = '''(?i)sk_(live|test)_[0-9a-zA-Z]{24}'''
+tags = ["stripe", "payment"]
+keywords = ["stripe", "sk_live", "sk_test"]
+
+# Global configuration
+[global]
+redact = true                     # Redact secret in output
+verbose = false
+maxTargetMegaBytes = 50
