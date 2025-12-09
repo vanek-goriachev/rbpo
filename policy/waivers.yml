@@ -1,0 +1,60 @@
+# Policy waivers for vulnerability management
+# Reference: project/69_sbom-vuln-mgmt.md
+#
+# Waiver structure:
+# - vulnerability_id: CVE-YYYY-NNNN or GHSA-XXXX-XXXX-XXXX
+#   component: package-name
+#   version: affected-version-range
+#   reason: "Business/technical justification"
+#   severity: Critical/High/Medium/Low
+#   created_by: name@example.com
+#   created_date: YYYY-MM-DD
+#   review_date: YYYY-MM-DD (must be within 90 days)
+#   issue_ref: "#123" or "https://github.com/org/repo/issues/123"
+#   status: approved/rejected/pending
+
+waivers:
+  # Пример waiver для ложного срабатывания
+  - vulnerability_id: "CVE-2023-12345"
+    component: "example-package"
+    version: ">=1.0.0 <2.0.0"
+    reason: "Vulnerability is in optional dependency not used in our codebase. Component is configured to disable the vulnerable feature."
+    severity: "High"
+    created_by: "security-team@example.com"
+    created_date: "2024-01-15"
+    review_date: "2024-04-15"  # Пересмотр через 90 дней
+    issue_ref: "#456"
+    status: "approved"
+
+  # Пример waiver для запланированного исправления
+  - vulnerability_id: "GHSA-xxxx-yyyy-zzzz"
+    component: "another-package"
+    version: "3.2.1"
+    reason: "Upgrade planned in Q2 2024. Current version is required for compatibility with legacy system. Risk accepted by security committee."
+    severity: "Medium"
+    created_by: "dev-lead@example.com"
+    created_date: "2024-01-15"
+    review_date: "2024-04-15"
+    issue_ref: "https://github.com/org/repo/issues/789"
+    status: "approved"
+
+  # Пример waiver для уязвимости в dev-зависимости
+  - vulnerability_id: "CVE-2023-67890"
+    component: "dev-tool"
+    version: "1.5.0"
+    reason: "Vulnerable component is only used in CI pipeline, isolated from production. No network access to untrusted sources."
+    severity: "Medium"
+    created_by: "ci-maintainer@example.com"
+    created_date: "2024-01-15"
+    review_date: "2024-04-15"
+    issue_ref: "#101"
+    status: "pending"
+
+# Waiver approval workflow:
+# 1. Developer creates waiver request with justification
+# 2. Security team reviews risk assessment
+# 3. If approved, waiver is added with 90-day review date
+# 4. Before review_date, team must either:
+#    - Fix the vulnerability
+#    - Extend waiver with new justification
+#    - Remove the component
