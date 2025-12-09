@@ -1,0 +1,92 @@
+rules:
+  # Custom rules for our project
+  - id: hardcoded-api-endpoint
+    patterns:
+      - pattern: '"https://api.example.com"'
+      - pattern: '"http://localhost:3000"'
+    message: Hardcoded API endpoint found
+    languages: [python, javascript, typescript]
+    severity: WARNING
+    fix: Use environment variables instead
+
+  - id: debug-logging-in-production
+    patterns:
+      - pattern: |
+          logging.debug(...)
+      - pattern: |
+          console.debug(...)
+      - pattern: |
+          print(...)
+        inside: |
+          def $FUNC(...):
+            ...
+    message: Debug logging found in production code
+    languages: [python, javascript, typescript]
+    severity: WARNING
+    fix: Remove or change to appropriate log level
+
+  - id: sql-injection-vulnerability
+    patterns:
+      - pattern: |
+          $QUERY = f"SELECT ... FROM ... WHERE id = { $USER_INPUT }"
+      - pattern: |
+          $QUERY = "SELECT ... FROM ... WHERE id = " + $USER_INPUT
+    message: Potential SQL injection vulnerability
+    languages: [python]
+    severity: ERROR
+    fix: Use parameterized queries or ORM methods
+
+  - id: insecure-random
+    patterns:
+      - pattern: random.randint(...)
+      - pattern: Math.random()
+      - pattern: random.random()
+    message: Insecure random number generation for security purposes
+    languages: [python, javascript, typescript]
+    severity: ERROR
+    fix: Use secrets module (Python) or crypto.getRandomValues() (JavaScript)
+
+  - id: no-input-validation
+    patterns:
+      - pattern: |
+          def $FUNC($REQUEST):
+            ...
+            $VAR = $REQUEST.get(...)
+            # No validation before use
+            ...
+    message: Missing input validation for user-controlled data
+    languages: [python]
+    severity: WARNING
+    metadata:
+      references:
+        - https://owasp.org/www-project-top-ten/
+
+  - id: insecure-deserialization
+    patterns:
+      - pattern: pickle.loads(...)
+      - pattern: yaml.load(...)
+      - pattern: marshal.loads(...)
+    message: Potentially insecure deserialization
+    languages: [python]
+    severity: ERROR
+    fix: Use safe_load for YAML or avoid pickle for untrusted data
+
+  - id: disabled-ssl-verification
+    patterns:
+      - pattern: verify=False
+      - pattern: 'rejectUnauthorized: false'
+    message: SSL/TLS certificate verification disabled
+    languages: [python, javascript, typescript]
+    severity: ERROR
+    fix: Enable SSL verification for production
+
+  - id: command-injection
+    patterns:
+      - pattern: os.system(...)
+      - pattern: subprocess.call(...)
+      - pattern: exec(...)
+      - pattern: eval(...)
+    message: Potential command injection vulnerability
+    languages: [python, javascript]
+    severity: ERROR
+    fix: Use safe alternatives or properly sanitize inputs
