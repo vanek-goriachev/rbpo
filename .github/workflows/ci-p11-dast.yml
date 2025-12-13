@@ -1,0 +1,65 @@
+name: P11 - DAST (ZAP baseline)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'app/**'
+      - 'src/**'
+      - '*.py'
+      - 'requirements.txt'
+      - 'docker-compose.yml'
+      - 'Dockerfile'
+      - '.github/workflows/ci-p11-dast.yml'
+
+jobs:
+  dast:
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Ensure evidence dirs
+        run: mkdir -p EVIDENCE/P11
+
+      - name: Create .env file for CI
+        run: |
+          cat << EOF > .env
+          DB_HOST=postgres
+          DB_PORT=5432
+          DB_NAME=simpleblog
+          DB_USER=simpleblog_user
+          DB_PASSWORD=simpleblog_password
+          DATABASE_URL=postgresql://simpleblog_user:simpleblog_password@postgres:5432/simpleblog
+          EOF
+
+      - name: Start services with docker-compose
+        run: |
+          docker-compose --profile=dev --env-file=.env up -d
+          # Ждем, пока приложение станет доступно
+          timeout 120 bash -c 'until curl -sf http://localhost:8000/health; do sleep 1; done'
+
+      - name: ZAP Baseline
+        run: |
+          docker run --rm --network host -v $PWD:/zap/wrk owasp/zap2docker-stable \
+            zap-baseline.py \
+              -t http://localhost:8000/ \
+              -r zap_baseline.html \
+              -J zap_baseline.json \
+              -d || true
+          mv zap_baseline.* EVIDENCE/P11/ || true
+
+      - name: Stop services
+        if: always()
+        run: docker-compose down
+
+      - name: Upload P11 evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: P11_EVIDENCE
+          path: EVIDENCE/P11
