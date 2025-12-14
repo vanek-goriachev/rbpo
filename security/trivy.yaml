@@ -1,0 +1,27 @@
+severity:
+  - UNKNOWN
+  - LOW
+  - MEDIUM
+  - HIGH
+  - CRITICAL
+
+exit-code: 1
+
+exit-on-eol: 0
+
+format: json
+
+ignore-unfixed: false
+
+security-checks:
+  - vuln
+  - config
+  - secret
+
+skip-dirs:
+  - .git
+  - node_modules
+
+skip-db-update: false
+
+timeout: 5m
