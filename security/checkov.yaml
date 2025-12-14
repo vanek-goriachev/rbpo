@@ -1,0 +1,10 @@
+framework:
+  - dockerfile
+  - docker_compose
+
+soft-fail: false
+
+output:
+  - cli
+  - json
+  - sarif
